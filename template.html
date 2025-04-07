@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulário de Compra</title>
+</head>
+<body>
+  <h1>Cadastro de Compra</h1>
+  <form id="compraForm">
+    <label>Cliente:</label>
+    <input type="text" id="cliente" name="cliente" required><br><br>
+
+    <label>UF:</label>
+    <select id="uf" name="UF" required>
+      <option value="">Selecione</option>
+      <option value="SP">SP</option>
+      <option value="RJ">RJ</option>
+      <option value="MG">MG</option>
+    </select><br><br>
+
+    <h3>Itens</h3>
+    <div id="itens">
+      <div class="item">
+        <label>Descrição:</label>
+        <input type="text" name="descricao" value="Notebook"><br>
+
+        <label>Quantidade:</label>
+        <input type="number" name="quantidade" value="1"><br>
+
+        <label>Preço Unitário:</label>
+        <input type="number" step="0.01" name="preco" value="3500.00"><br><br>
+      </div>
+
+      <div class="item">
+        <label>Descrição:</label>
+        <input type="text" name="descricao" value="Mouse"><br>
+
+        <label>Quantidade:</label>
+        <input type="number" name="quantidade" value="2"><br>
+
+        <label>Preço Unitário:</label>
+        <input type="number" step="0.01" name="preco" value="150.00"><br><br>
+      </div>
+    </div>
+
+    <button type="submit">Enviar</button>
+  </form>
+
+  <hr>
+
+  <h2>Resposta do Servidor:</h2>
+  <pre id="resposta"></pre>
+
+  <script>
+    document.getElementById('compraForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const cliente = document.getElementById('cliente').value;
+      const uf = document.getElementById('uf').value;
+
+      const itensDivs = document.querySelectorAll('#itens .item');
+      const itens = [];
+
+      itensDivs.forEach(div => {
+        const descricao = div.querySelector('input[name="descricao"]').value;
+        const quantidade = parseInt(div.querySelector('input[name="quantidade"]').value);
+        const precoUnitario = parseFloat(div.querySelector('input[name="preco"]').value);
+
+        itens.push({ descricao, quantidade, precoUnitario });
+      });
+
+      const payload = {
+        cliente: cliente,
+        UF: uf,
+        itens: itens
+      };
+
+      fetch('http://localhost:8080', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Exibe o JSON formatado no <pre> de resposta
+        document.getElementById('resposta').textContent = JSON.stringify(data, null, 2);
+      })
+      .catch(error => {
+        console.error('Erro:', error);
+        document.getElementById('resposta').textContent = "Erro ao enviar a requisição: " + error;
+      });
+    });
+  </script>
+</body>
+</html>
