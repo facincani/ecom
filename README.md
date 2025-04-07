@@ -1,9 +1,13 @@
 
 # Projeto: Sistema de Processamento de Pedidos de Compra
 
+## Requisitos
+
+Você deve desenvolver um sistema composto por dois serviços distintos, 1 serviço que receberá os pedidos do client, e outro serviço que executa as regras de negócio descritas no documento a seguir
+
 ## Objetivo
 
-Desenvolver um sistema capaz de receber e processar pedidos de compra no seguinte formato:
+Desenvolver um serviço capaz de receber e processar pedidos de compra no seguinte formato:
 
 ```json
 {
