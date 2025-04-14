@@ -1,64 +1,45 @@
+# Projeto:  Serviço de Pedidos + Catálogo de Produtos
 
-# Projeto: Sistema de Processamento de Pedidos de Compra
+## Descrição Geral
 
-## Requisitos
+Para completar nosso ecossitema precisamos de um serviço de **catálogo de produtos**, além disso evoluções são necessárias no **sistema de pedidos**
 
-Você deve desenvolver um sistema composto por dois serviços distintos, 1 serviço que receberá os pedidos do client, e outro serviço que executa as regras de negócio descritas no documento a seguir
+---
 
-## Objetivo
+## Descrição do Serviço de Catálogo de Produtos
 
-Desenvolver um serviço capaz de receber e processar pedidos de compra no seguinte formato:
+### 🛠️ Funções principais
+- Cadastro de produtos com:
+  - Nome
+  - Descrição
+  - Preço
+  - Estoque disponível
+- Listagem e busca de produtos
+- Atualização de estoque (após pedidos)
 
-```json
-{
-  "cliente": "João da Silva",
-  "UF": "SP",
-  "itens": [
-    { "descricao": "Notebook", "quantidade": 1, "precoUnitario": 3500.00 },
-    { "descricao": "Mouse", "quantidade": 2, "precoUnitario": 150.00 }
-  ]
-}
-```
+### 💾 Persistência
+- Tabela de **produtos**
 
-## Funcionalidades do Sistema
+#### ✅ Validações
+- Nome obrigatório
+- Preço deve ser **positivo**
+- Estoque não pode ser **negativo**
 
-### 1. Registro do Pedido
+---
 
-- O pedido deve ser **armazenado no banco de dados**.
+### 2. Serviço de Pedidos
 
-### 2. Cálculo de Impostos
+#### 🛠️ Funções principais
+- Consultar pedidos por cliente
+- Atualizar **status do pedido** (ex: `PENDENTE`, `ENVIADO`, `CANCELADO`)
 
-- O sistema deve realizar uma chamada para o serviço de **cálculo de imposto**, que calcula os tributos devidos com base na região do cliente.
-- A alíquota aplicada varia de acordo com a região da UF informada:
+#### 🔁 Requisições HTTP externas
+- Ao criar o pedido, o serviço de pedidos consulta o serviço de catálogo para:
+  - Verificar se o(s) produto(s) existe(m)
+  - Checar se há **estoque suficiente**
+- Após criar o pedido, envia requisição para o serviço de catálogo para **atualizar o estoque**
 
-| Região         | Alíquota |
-|----------------|----------|
-| Norte          | 45%      |
-| Nordeste       | 40%      |
-| Centro-Oeste   | 50%      |
-| Sudeste        | 60%      |
-| Sul            | 65%      |
+#### ✅ Validações
+- Não permitir pedido com **produto inexistente**
+- Não permitir pedido com **quantidade superior ao estoque**
 
-### 3. Geração de Comprovante
-
-O serviço de cálculo de imposto deve retornar um comprovante no seguinte formato:
-
-```json
-{
-  "cliente": "João da Silva",
-  "UF": "SP",
-  "Regiao": "Sudeste",
-  "itens": [
-    { "descricao": "Notebook", "quantidade": 1, "precoUnitario": 3500.00 },
-    { "descricao": "Mouse", "quantidade": 2, "precoUnitario": 150.00 }
-  ],
-  "subtotal": 3800.00,
-  "imposto": 380.00,
-  "total": 4180.00,
-  "Aliquota_Aplicada": 60
-}
-```
-
-### 4. Retorno ao Cliente
-
-- O comprovante gerado deve ser **retornado ao cliente** como resposta da operação.
